@@ -31,9 +31,9 @@ steps:
     dotnet pack StringUtility/StringUtility.csproj --configuration $(buildConfiguration) --no-build --output $(outputDir)
   displayName: 'Pack NuGet package'
 
-- task: NuGetCommand@2
-  displayName: 'Push NuGet Package to Azure Artifacts'
-  inputs:
-    command: 'push'
-    packagesToPush: '$(outputDir)/*.nupkg'
-    publishVstsFeed: 'https://pkgs.dev.azure.com/rombao/_packaging/string-utility-feed/nuget/v3/index.json'
+- task: NuGetAuthenticate@1
+  displayName: 'NuGet Authenticate'
+
+- script: |
+      nuget.exe push -Source "https://pkgs.dev.azure.com/rombao/_packaging/string-utility-feed/nuget/v3/index.json" -ApiKey az $(Build.ArtifactStagingDirectory)\*.nupkg
+  displayName: Push
