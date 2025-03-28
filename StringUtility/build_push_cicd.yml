@@ -1,0 +1,39 @@
+﻿trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  name: Comp367_SH_Agent
+
+variables:
+  buildConfiguration: 'Release'
+  outputDir: '$(Build.ArtifactStagingDirectory)'
+
+steps:
+
+- task: UseDotNet@2
+  displayName: 'Install .NET 8 SDK'
+  inputs:
+    packageType: 'sdk'
+    version: '8.0.x'
+
+- script: dotnet restore
+  displayName: 'Restore NuGet packages'
+
+- script: dotnet build --configuration $(buildConfiguration)
+  displayName: 'Build solution'
+
+- script: dotnet test --configuration $(buildConfiguration)
+  displayName: 'Run tests'
+
+- script: |
+    dotnet pack StringUtility/StringUtility.csproj --configuration $(buildConfiguration) --no-build --output $(outputDir)
+  displayName: 'Pack NuGet package'
+
+- task: NuGetCommand@2
+  displayName: 'Push NuGet Package to Azure Artifacts'
+  inputs:
+    command: 'push'
+    packagesToPush: '$(outputDir)/*.nupkg'
+    publishVstsFeed: 'https://pkgs.dev.azure.com/rombao/_packaging/string-utility-feed/nuget/v3/index.json'
