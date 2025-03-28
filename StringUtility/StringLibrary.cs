@@ -12,6 +12,11 @@ namespace StringUtility
             char ch = str[0];
             return char.IsUpper(ch);
         }
+
+        public static bool RonaldTest(this string str)
+        {
+            return true;
+        }
     }
 }
 
