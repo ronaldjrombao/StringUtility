@@ -9,7 +9,8 @@ pool:
 variables:
   buildConfiguration: 'Release'
   outputDir: '$(Build.ArtifactStagingDirectory)'
-
+  commitShort: $[substring(variables['Build.SourceVersion'], 0, 8)]
+  baseVersion: '1.0.1'
 steps:
 
 - task: UseDotNet@2
@@ -27,11 +28,22 @@ steps:
 - script: dotnet test --configuration $(buildConfiguration)
   displayName: 'Run tests'
 
+- task: PowerShell@2
+  displayName: 'Set Package Version'
+  inputs:
+    targetType: 'inline'
+    script: |
+      $baseVersion = "$(baseVersion)"
+      $shortCommit = "$(commitShort)"
+      $packageVersion = "$baseVersion-$shortCommit"
+      Write-Host "##vso[task.setvariable variable=PackageVersion]$packageVersion"
+      Write-Host "PackageVersion: $packageVersion"
+
 - script: |
-    dotnet pack StringUtility/StringUtility.csproj --configuration $(buildConfiguration) --no-build --output $(outputDir)
+    dotnet pack StringUtility/StringUtility.csproj --configuration $(buildConfiguration) --no-build --output $(outputDir) /p:PackageVersion=$(PackageVersion)
   displayName: 'Pack NuGet package'
 
-- task: NuGetToolInstaller@1                            # Minimum required NuGet version: 4.8.0.5385+.
+- task: NuGetToolInstaller@1                           
   displayName: 'NuGet Tool Installer'
 
 - task: NuGetAuthenticate@1
