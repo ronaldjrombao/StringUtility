@@ -40,7 +40,7 @@ steps:
       Write-Host "PackageVersion: $packageVersion"
 
 - script: |
-    dotnet pack StringUtility/StringUtility.csproj --configuration $(buildConfiguration) --no-build --output $(outputDir) /p:PackageVersion=$(PackageVersion)
+    dotnet pack StringUtilityLab4Ronald/StringUtilityLab4Ronald.csproj --configuration $(buildConfiguration) --no-build --output $(outputDir) /p:PackageVersion=$(PackageVersion)
   displayName: 'Pack NuGet package'
 
 - task: NuGetToolInstaller@1                           

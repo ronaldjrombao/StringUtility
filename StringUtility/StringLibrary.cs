@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace StringUtility
+namespace StringUtilityLab4Ronald
 {
-    public static class StringLibrary
+    public static class StringLibraryExtensions
     {
         public static bool StartsWithUpper(this string str)
         {
